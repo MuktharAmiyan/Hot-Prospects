@@ -18,18 +18,28 @@ struct ProspectView: View {
     
     var body: some View {
         NavigationStack {
-            Text("People: \(prospects.people.count) ")
-                .navigationTitle(title)
-                .toolbar{
-                    Button{
-                        let prospect = Prospect()
-                        prospect.name = "Mukthar Amiyan"
-                        prospect.emailAddress = "amiyanmukthar@gmail.com"
-                        prospects.people.append(prospect)
-                    }label: {
-                        Label("Scan", systemImage: "qrcode.viewfinder")
+            List {
+                ForEach(filterdProspects) {
+                    prospect in
+                    VStack (alignment: .leading ){
+                        Text(prospect.name)
+                            .font(.headline)
+                        Text(prospect.emailAddress)
+                            .foregroundStyle(.secondary)
                     }
                 }
+            }
+            .navigationTitle(title)
+            .toolbar{
+                Button{
+                    let prospect = Prospect()
+                    prospect.name = "Mukthar Amiyan"
+                    prospect.emailAddress = "amiyanmukthar@gmail.com"
+                    prospects.people.append(prospect)
+                }label: {
+                    Label("Scan", systemImage: "qrcode.viewfinder")
+                }
+            }
         }
     }
     
@@ -41,6 +51,17 @@ struct ProspectView: View {
             "Contacted people"
         case .uncontacted:
             "Uncontacted people"
+        }
+    }
+    
+    var filterdProspects : [Prospect] {
+      return switch filter {
+        case .none:
+          prospects.people
+        case .contacted:
+          prospects.people.filter {$0.isConnected}
+        case .uncontacted:
+          prospects.people.filter { !$0.isConnected}
         }
     }
 }
